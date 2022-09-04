@@ -1,4 +1,4 @@
-This project was bootstrapped with Create React App.
+<b>This project was bootstrapped with Create React App. </b>
 
 Available Scripts
 In the project directory, you can run:
