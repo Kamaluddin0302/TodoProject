@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function TaskCard({ show }) {
+export default function TaskCard({ show, val, CompteTask, navigation }) {
   return (
     <View
       style={[
@@ -10,25 +10,32 @@ export default function TaskCard({ show }) {
         { backgroundColor: show ? "#e1e1e7" : "white" },
       ]}
     >
-      <View>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("TaskDetail", { val: val })}
+      >
         <View style={styles.detailItem}>
           <Text style={styles.title}>Task Name: </Text>
-          <Text style={styles.value}>ABC</Text>
+          <Text style={styles.value}>{val.Title}</Text>
         </View>
         <View style={styles.detailItem}>
           <Text style={styles.subtitle}>Time: </Text>
-          <Text style={styles.subvalue}>4:00 PM</Text>
+          <Text style={styles.subvalue}>{val.date}</Text>
         </View>
         <View style={styles.detailItem}>
           <Text style={styles.subtitle}>Description: </Text>
-          <Text style={styles.subvalue}>
-            ................................................
-          </Text>
+          <Text style={styles.subvalue}>{val.Description}</Text>
         </View>
-      </View>
-      <View style={styles.mark}>
-        <Ionicons name="ios-checkmark" size={24} color="green" />
-      </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.mark}>
+        {val.status === "completed" ? (
+          <Ionicons name="ios-checkmark" size={24} color="green" />
+        ) : (
+          <TouchableOpacity
+            style={styles.mark}
+            onPress={() => CompteTask(val.id)}
+          ></TouchableOpacity>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }

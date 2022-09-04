@@ -1,16 +1,22 @@
 import * as React from "react";
-import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+// all Screen
 import Home from "../../Screens/Home";
-import Search from "../../Screens/Search";
+import Search from "../../Screens/TodoSearch";
 import AddTask from "../../Screens/AddTask";
-import AddWeatherAlert from "../../Screens/AddWatherAlert";
+import AddWeatherAlert from "../../Screens/AddWeatherAlert";
 import AddLocationAlert from "../../Screens/AddLocationAlert";
 import AddNewCategory from "../../Screens/AddCategory";
 import Edittask from "../../Screens/EditTask";
 import SignIn from "../../Screens/SignIn";
 import Signup from "../../Screens/SignUp";
+import AllTasks from "../../Screens/AllTasks";
+import TaskDetail from "../../Screens/TaskDetail";
+import Allalter from "../../Screens/AllLert";
+import AlertDetail from "../../Screens/AlertDetail";
+import AlertSearch from "../../Screens/AlertSearch";
 
 const Stack = createNativeStackNavigator();
 
@@ -77,8 +83,44 @@ function MainNaviation() {
           }}
         />
         <Stack.Screen
-          name="Search"
+          name="TodoSearch"
           component={Search}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="AlertSearch"
+          component={AlertSearch}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="AllTasks"
+          component={AllTasks}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="TaskDetail"
+          component={TaskDetail}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="AlertDetail"
+          component={AlertDetail}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="AllAlert"
+          component={Allalter}
           options={{
             headerShown: false,
           }}

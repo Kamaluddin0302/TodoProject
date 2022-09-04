@@ -1,20 +1,29 @@
-import { View, Text, StyleSheet } from "react-native";
-import React from "react";
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import { View, Text, StyleSheet, TextInput } from "react-native";
+import React, { useState } from "react";
+import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
 
-export default function Header({ navigation }) {
+export default function Header({ navigation, back, Title, path }) {
+  let [search, setSearch] = useState(true);
   return (
     <View style={styles.container}>
-      <Text style={styles.lefttext}>Todos</Text>
+      {back && (
+        <Ionicons
+          name="arrow-back-outline"
+          size={24}
+          color="black"
+          onPress={() => navigation.goBack()}
+        />
+      )}
+
+      <Text style={styles.lefttext}>{Title}</Text>
       <View style={styles.rightView}>
         <AntDesign
           name="search1"
           size={22}
           color="black"
           style={styles.icon}
-          onPress={() => navigation.navigate("Search")}
+          onPress={() => navigation.navigate(path, { route: Title })}
         />
-        <Entypo name="dots-three-vertical" size={20} color="black" />
       </View>
     </View>
   );
@@ -29,6 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
+    marginBottom: 2,
   },
   rightView: {
     flexDirection: "row",

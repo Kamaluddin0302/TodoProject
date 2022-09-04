@@ -5,11 +5,13 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddHeader from "../Components/AddHeader";
 import AddInput from "../Components/AddInput";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Fontisto, Ionicons } from "@expo/vector-icons";
+import { AddWeatherFunc } from "../Config/Functions/AddFunctions";
+import firebase from "firebase";
 
 export default function AddWeatherAlert({ navigation }) {
   const [date, setDate] = useState(new Date());
@@ -18,6 +20,8 @@ export default function AddWeatherAlert({ navigation }) {
   const [TimeShow, setTimeShow] = useState(false);
   let [Title, setTitle] = useState("");
   let [Description, setDescription] = useState("");
+  let [uid, setUid] = useState("");
+  let [Weather, setWeather] = useState("");
 
   const onChange1 = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -31,11 +35,45 @@ export default function AddWeatherAlert({ navigation }) {
     setDate(currentDate);
     console.log(currentDate);
   };
-  console.log(dateShow, "fknknk");
+
+  // add Weather Function which is called from header mark button from header
+  let AddFunction = async () => {
+    try {
+      if (Title === "" || Description === "" || Weather === "") {
+        alert("Enter All Data");
+      } else {
+        await AddWeatherFunc({
+          Title,
+          Description,
+          Weather,
+          uid,
+          date,
+        });
+        alert("Weather Alert Successfully Added");
+        navigation.goBack();
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        setUid(user.uid);
+      } else {
+        navigation.navigate("SignIn");
+      }
+    });
+  }, []);
   return (
     <View style={styles.container}>
       <ScrollView>
-        <AddHeader title="Add Weather Alert" navigation={navigation} />
+        <AddHeader
+          title="Add Weather Alert"
+          navigation={navigation}
+          AddFunction={AddFunction}
+        />
         <View style={styles.MainView}>
           <AddInput
             title="Title"
@@ -82,10 +120,15 @@ export default function AddWeatherAlert({ navigation }) {
               mode={"time"}
               is24Hour={true}
               onChange={onChange2}
+              minimumDate={new Date()}
             />
           )}
 
-          <AddInput title="Set Weather" />
+          <AddInput
+            title="Set Weather"
+            value={Weather}
+            onChange={(text) => setWeather(text)}
+          />
         </View>
       </ScrollView>
     </View>

@@ -5,15 +5,27 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddHeader from "../Components/AddHeader";
 import AddInput from "../Components/AddInput";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Fontisto, Ionicons } from "@expo/vector-icons";
 import DropDown from "../Components/DropDown";
+import firebase from "firebase";
+import { AddTasks } from "../Config/Functions/AddFunctions";
+import { GetCategories } from "../Config/Functions/GetFunctions";
+import { Priority } from "../Config/Objects/Priority";
 
 export default function AddTask({ title, navigation }) {
-  const [date, setDate] = useState(new Date(1598051730000));
+  let [Title, setTitle] = useState("");
+  let [Description, setDescription] = useState("");
+  let [uid, setUid] = useState("");
+  let [Location, setLocation] = useState("");
+  let [Pirority, setPirority] = useState("");
+  let [Categories, setCategories] = useState([]);
+  let [selectCategories, setSetSelectCatrgories] = useState("");
+
+  const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [dateShow, setDateShow] = useState(false);
   const [TimeShow, setTimeShow] = useState(false);
@@ -22,22 +34,93 @@ export default function AddTask({ title, navigation }) {
     const currentDate = selectedDate;
     setDateShow(false);
     setDate(currentDate);
-    console.log(currentDate);
   };
   const onChange2 = (event, selectedDate) => {
+    console.log(selectedDate.toLocaleString(), "=====>");
+
     const currentDate = selectedDate;
     setTimeShow(false);
     setDate(currentDate);
     console.log(currentDate);
   };
-  console.log(dateShow, "fknknk");
+
+  let AddFunction = async () => {
+    console.log(
+      Title,
+      "title",
+      Description,
+      "Description",
+      Location,
+      "Location",
+      Pirority,
+      "Pirority"
+    );
+    try {
+      if (
+        (Title === "" ||
+          Description === "" ||
+          Location === "" ||
+          Pirority === "",
+        selectCategories === "")
+      ) {
+        alert("Enter All Data");
+      } else {
+        await AddTasks({
+          Title,
+          Description,
+          uid,
+          Location,
+          status: "pending",
+          date: date.toLocaleString(),
+          Pirority,
+          Categories: selectCategories,
+        });
+        alert("Weather Alert Successfully Added");
+        navigation.goBack();
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        await GetCategories(user.uid)
+          .then((catres) => {
+            setCategories(catres);
+            setUid(user.uid);
+          })
+          .catch(() => {
+            alert("First Add Any Category");
+            navigation.navigate("AddNewCategory");
+          });
+      } else {
+        navigation.navigate("SignIn");
+      }
+    });
+  }, []);
+  console.log(Categories, "fknkn");
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <AddHeader title="Add New Tasks" navigation={navigation} />
+    <View style={styles.container}>
+      <AddHeader
+        title="Add New Tasks"
+        navigation={navigation}
+        AddFunction={AddFunction}
+      />
+      <ScrollView>
         <View style={styles.MainView}>
-          <AddInput title="Title" />
-          <AddInput title="Description" multiple={true} />
+          <AddInput
+            title="Title"
+            value={Title}
+            onChange={(text) => setTitle(text)}
+          />
+          <AddInput
+            title="Description"
+            multiple={true}
+            value={Description}
+            onChange={(text) => setDescription(text)}
+          />
           <TouchableOpacity
             style={styles.button}
             onPress={() => setDateShow(true)}
@@ -45,7 +128,7 @@ export default function AddTask({ title, navigation }) {
             <Fontisto name="date" size={30} color="white" />
             <Text style={styles.buttonTitle}>Set Date</Text>
           </TouchableOpacity>
-          <Text>selected: {date.toLocaleString()}</Text>
+          <Text style={styles.selectDate}>{date.toLocaleString()}</Text>
 
           <TouchableOpacity
             style={styles.button}
@@ -60,8 +143,8 @@ export default function AddTask({ title, navigation }) {
               testID="dateTimePicker"
               value={date}
               mode={"date"}
-              is24Hour={true}
               onChange={onChange1}
+              minimumDate={new Date()}
             />
           )}
           {TimeShow && (
@@ -69,17 +152,33 @@ export default function AddTask({ title, navigation }) {
               testID="dateTimePicker"
               value={date}
               mode={"time"}
-              is24Hour={true}
+              is24Hour={false}
               onChange={onChange2}
             />
           )}
 
-          <DropDown title="Location" />
-          <DropDown title="Set Pirority " />
-          <DropDown title="Select category" />
+          <AddInput
+            title="Set Location"
+            value={Location}
+            onChange={(text) => setLocation(text)}
+          />
+          <DropDown
+            title="Set Pirority "
+            data={Priority}
+            onChange={(text) => setPirority(text)}
+          />
+          {Categories.length > 0 && (
+            <DropDown
+              title="Select category"
+              data={Categories}
+              onChange={(text) => {
+                setSetSelectCatrgories(text);
+              }}
+            />
+          )}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -105,5 +204,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginLeft: 20,
+  },
+  selectDate: {
+    fontSize: 25,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

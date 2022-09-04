@@ -12,52 +12,25 @@ import TaskCard from "../Components/TaskCard";
 import TodoCard from "../Components/TodoCard";
 import Header from "../Components/Header";
 import {
-  GetAllCompletedTasks,
-  GetAllPendingTasks,
-  GetAllTasks,
+  GetAllCategories,
+  GetLocationAlert,
+  GetWeatherAlert,
 } from "../Config/Functions/GetFunctions";
-import { DeleteTaskFunc } from "../Config/Functions/updateFunctions";
+import {
+  DeleteAlertFunc,
+  DeleteTaskFunc,
+} from "../Config/Functions/updateFunctions";
+import AlertCard from "../Components/AlertCard";
 
-export default function AllTasks({ navigation, route }) {
+export default function Allalter({ navigation, route }) {
   let [AllTasks, setAllTasks] = useState([]);
   let [NotFound, setNotFound] = useState("");
   let [Spiner, setSpiner] = useState(false);
 
-  let GetUpcommingTasks = async () => {
+  let GetWeatherAlertFunc = async () => {
     setSpiner(true);
-    let todaydate = new Date().toLocaleString().split(" ");
-    console.log(todaydate);
-
     try {
-      let getAllTask = await GetAllTasks();
-      let filterTask = getAllTask.filter(
-        (val, ind) => todaydate[4] <= val.date.split(" ")[4]
-      );
-      setAllTasks(filterTask);
-      setSpiner(false);
-    } catch (error) {
-      setSpiner(false);
-      setAllTasks([]);
-    }
-  };
-
-  let GetPendingTasks = async () => {
-    setSpiner(true);
-
-    try {
-      let getAllTask = await GetAllPendingTasks();
-      setAllTasks(getAllTask);
-      setSpiner(false);
-    } catch (error) {
-      setSpiner(false);
-      setAllTasks([]);
-    }
-  };
-  let GetCompletedTasks = async () => {
-    setSpiner(true);
-
-    try {
-      let getAllTask = await GetAllCompletedTasks();
+      let getAllTask = await GetWeatherAlert();
       setAllTasks(getAllTask);
       setSpiner(false);
     } catch (error) {
@@ -66,9 +39,30 @@ export default function AllTasks({ navigation, route }) {
     }
   };
 
-  let EditTodo = (val) => {
-    navigation.navigate("EditTask", { data: val });
+  let GetLocationAlertFunc = async () => {
+    setSpiner(true);
+    try {
+      let getAllTask = await GetLocationAlert();
+      setAllTasks(getAllTask);
+      setSpiner(false);
+    } catch (error) {
+      setSpiner(false);
+      setAllTasks([]);
+    }
   };
+
+  let GetCategoriesFunc = async () => {
+    setSpiner(true);
+    try {
+      let getAllTask = await GetAllCategories();
+      setAllTasks(getAllTask);
+      setSpiner(false);
+    } catch (error) {
+      setSpiner(false);
+      setAllTasks([]);
+    }
+  };
+
   let DeleteTodo = (id, Title) =>
     Alert.alert("Are you sure you want to Delete this task?", Title, [
       {
@@ -80,9 +74,25 @@ export default function AllTasks({ navigation, route }) {
         text: "OK",
         onPress: () => {
           try {
-            DeleteTaskFunc(id);
-            alert("Deleted Successfully");
-            CheckFunc();
+            console.log(route.params.route);
+            if (route.params.route === "Weather Alert") {
+              DeleteAlertFunc("weather", id).then(() => {
+                CheckFunc();
+                alert("Deleted Successfully");
+              });
+            }
+            if (route.params.route === "Location Alert") {
+              DeleteAlertFunc("Locations", id).then(() => {
+                CheckFunc();
+                alert("Deleted Successfully");
+              });
+            }
+            if (route.params.route === "All Categories") {
+              DeleteAlertFunc("Categories", id).then(() => {
+                CheckFunc();
+                alert("Deleted Successfully");
+              });
+            }
           } catch (error) {
             alert(error);
           }
@@ -91,14 +101,14 @@ export default function AllTasks({ navigation, route }) {
     ]);
 
   let CheckFunc = () => {
-    if (route.params.route === "Upcoming Tasks") {
-      GetUpcommingTasks();
+    if (route.params.route === "Weather Alert") {
+      GetWeatherAlertFunc();
     }
-    if (route.params.route === "Pending") {
-      GetPendingTasks();
+    if (route.params.route === "Location Alert") {
+      GetLocationAlertFunc();
     }
-    if (route.params.route === "Completed") {
-      GetCompletedTasks();
+    if (route.params.route === "All Categories") {
+      GetCategoriesFunc();
     }
   };
   useState(async () => {
@@ -107,11 +117,13 @@ export default function AllTasks({ navigation, route }) {
     });
   }, [navigation]);
 
+  console.log(route.params.route);
+
   return (
     <View style={styles.container}>
       <Header
         navigation={navigation}
-        path="TodoSearch"
+        path="AlertSearch"
         Title={route.params.route}
         back={true}
       />
@@ -121,12 +133,11 @@ export default function AllTasks({ navigation, route }) {
             <ActivityIndicator size="large" color="red" />
           ) : AllTasks.length > 0 ? (
             AllTasks.map((val, ind) => (
-              <TodoCard
+              <AlertCard
                 navigation={navigation}
                 key={ind}
                 val={val}
                 DeleteTodo={DeleteTodo}
-                EditTodo={EditTodo}
               />
             ))
           ) : (

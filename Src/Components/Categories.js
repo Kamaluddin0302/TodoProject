@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 
-export default function Categories({ title, show }) {
+export default function Categories({ title, show, Onpress, icon }) {
   return (
     <TouchableOpacity
       style={[
@@ -9,7 +9,9 @@ export default function Categories({ title, show }) {
         { backgroundColor: show ? "#e1e1e7" : "white" },
       ]}
       disabled={show}
+      onPress={() => Onpress()}
     >
+      {icon && icon}
       <Text style={styles.title}>{title}</Text>
     </TouchableOpacity>
   );
@@ -23,14 +25,16 @@ const styles = StyleSheet.create({
     margin: 5,
     height: 150,
     width: "46%",
-    justifyContent: "center",
-    // padding: 20,
+    // justifyContent: "center",
+    padding: 20,
+
     alignContent: "center",
     alignItems: "center",
     borderRadius: 5,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
   },
 });

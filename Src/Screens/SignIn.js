@@ -10,6 +10,7 @@ export default function SignIn({ navigation }) {
   let [Password, setPassword] = useState("");
   let [spiner, setSpiner] = useState(false);
 
+  // useEffect will check if user is already logined then it will redirect to Home
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       console.log(user);
@@ -19,10 +20,12 @@ export default function SignIn({ navigation }) {
     });
   }, []);
 
+  // Login which is calling on login button
+
   let LoginF = async () => {
-    setSpiner(true);
+    setSpiner(true); // when it true a spiner will show in login
     try {
-      let SigninRespoce = await SignInFunc(email, Password);
+      let SigninRespoce = await SignInFunc(email, Password); // call login function it will login user from firebase
 
       if (SigninRespoce === "true") {
         navigation.navigate("Home");
@@ -30,7 +33,7 @@ export default function SignIn({ navigation }) {
       }
     } catch (error) {
       alert(error);
-      setSpiner(true);
+      setSpiner(false); // when it false spiner will be hide-
     }
   };
 

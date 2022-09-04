@@ -1,12 +1,45 @@
 import firebase from "firebase";
 import * as ImagePicker from "expo-image-picker";
 
-let AddCategoryFunc = (category) => {
+let AddCategoryFunc = (data) => {
   return new Promise((resolve, reject) => {
     firebase
       .firestore()
       .collection("Categories")
-      .add(category)
+      .add(data)
+      .then(() => resolve("true"))
+      .catch((error) => reject(error));
+  });
+};
+
+let AddLocationFunc = (data) => {
+  return new Promise((resolve, reject) => {
+    firebase
+      .firestore()
+      .collection("Locations")
+      .add(data)
+      .then(() => resolve("true"))
+      .catch((error) => reject(error));
+  });
+};
+
+let AddWeatherFunc = (data) => {
+  return new Promise((resolve, reject) => {
+    firebase
+      .firestore()
+      .collection("weather")
+      .add(data)
+      .then(() => resolve("true"))
+      .catch((error) => reject(error));
+  });
+};
+
+let AddTasks = (data) => {
+  return new Promise((resolve, reject) => {
+    firebase
+      .firestore()
+      .collection("Tasks")
+      .add(data)
       .then(() => resolve("true"))
       .catch((error) => reject(error));
   });
@@ -41,4 +74,4 @@ let AddImage = async () => {
   });
 };
 
-export { AddCategoryFunc, AddImage };
+export { AddCategoryFunc, AddImage, AddWeatherFunc, AddLocationFunc, AddTasks };

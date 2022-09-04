@@ -22,6 +22,8 @@ if (!firebase.apps.length) {
 export default function App() {
   return (
     <View style={styles.container}>
+
+      {/* Main Navigation  */}
       <MainNaviation />
       {/* <StatusBar style="light" /> */}
     </View>
